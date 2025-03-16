@@ -108,7 +108,7 @@ if __name__ == '__main__':
         labels = dlec.fit_transform(_dt['Y'].flatten())
 
         # Chọn ngẫu nhiên 20% dữ liệu đã được gắn nhãn
-        n_labeled = int(0.2 * len(labels))
+        n_labeled = int(0.4 * len(labels))
 
         np.random.seed(SEED)
         labeled_indices = np.random.choice(len(labels), n_labeled, replace=False)
