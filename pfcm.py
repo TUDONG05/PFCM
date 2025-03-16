@@ -13,14 +13,6 @@ class PFPCM(PCM):
         self.n=n 
         super().__init__(X, n_clusters, m, max_iter, epsilon, seed)
         
-    # giong FCM vi co rang buoc tong
-    def _ktmttv(self):
-        """Khởi tạo ma trận thành viên """
-        np.random.seed(self.seed)
-        u =  np.random.rand(self.n_data,self.n_clusters)
-        # u chia cho tổng các mức độ phụ thuộc thành phần để chuẩn hóa đảm bảo tổng các phần từ cùng 1 hàng bằng 1
-        return u / division_by_zero(np.sum(u,axis=1, keepdims=True))
-
 
     # gan giong ham cap nhat dh cua PCM (10)
     def _capnhat_typicality(self):
@@ -46,7 +38,8 @@ class PFPCM(PCM):
     
     def fit(self):
         self.typicality, self.centroids ,self.step,self.eta= super().fit(mode=2)
-        return self.typicality, self.centroids, self.step
+        self.u = self._capnhat_mttv()
+        return self.u, self.centroids, self.step
 if __name__ == '__main__':
     import time
     
@@ -109,6 +102,7 @@ if __name__ == '__main__':
         print(f'size={_size}')
         n_clusters = _TEST['n_cluster']
         # ===============================================
+
         # Gán nhãn cho dữ liệu
         dlec = LabelEncoder()
         labels = dlec.fit_transform(_dt['Y'].flatten())
@@ -126,22 +120,22 @@ if __name__ == '__main__':
         
 
 
-        titles = ['Alg', 'Time', 'Step', 'DI+', 'DB-', 'PC+', 'XB-', 'CE-','SI+','FHV-',' PE-']
-        print(SPLIT.join(titles))
+        # titles = ['Alg', 'Time', 'Step', 'DI+', 'DB-', 'PC+', 'XB-', 'CE-','SI+','FHV-',' PE-']
+        # print(SPLIT.join(titles))
         
 
-        from f1.clustering.cmeans.fcm import Dfcm
-        fcm = Dfcm(n_clusters=n_clusters, m=M, epsilon=EPSILON, max_iter=MAX_ITER)
-        fcm.fit(data=X, seed=SEED)
-        print(write_report(alg='FCM0', index=0, process_time=fcm.process_time, step=fcm.step, X=X, V=fcm.centroids, U=fcm.membership, labels_all=labels_all))
+        # from f1.clustering.cmeans.fcm import Dfcm
+        # fcm = Dfcm(n_clusters=n_clusters, m=M, epsilon=EPSILON, max_iter=MAX_ITER)
+        # fcm.fit(data=X, seed=SEED)
+        # print(write_report(alg='FCM0', index=0, process_time=fcm.process_time, step=fcm.step, X=X, V=fcm.centroids, U=fcm.membership, labels_all=labels_all))
 
         titles = ['Alg', 'Time', 'Step', 'DI+', 'DB-', 'PC+', 'XB-', 'CE-','SI+','FHV-','PE-']
         print(SPLIT.join(titles))
 
         # chay thuat toan fcm
         # ===============================================================================================================================================
-        sys.path.append('/home/dongtu/Desktop/DVT/fcm')
-        from fcm.fcm_np import FCM
+        sys.path.append('/home/dongtu/Desktop/DVT/FCM')
+        from FCM.fcm_np import FCM
         fcm1 = FCM(X, n_clusters=n_clusters, m=M, max_iter=MAX_ITER, epsilon=EPSILON,seed=SEED)
         u_fcm,centroids_fcm,step=fcm1.fit()
         print(write_report(alg='FCM', index=0, process_time=fcm1.time, step=fcm1.step, X=X, V=fcm1.centroids, U=fcm1.u, labels_all=labels_all))
@@ -167,7 +161,7 @@ if __name__ == '__main__':
         # chay thuat toan PFCM
         # ===============================================
 
-        pfcm = PFPCM(X, n_clusters, M,2, MAX_ITER, EPSILON, SEED,2,0.55)
+        pfcm = PFPCM(X, n_clusters, M,2, MAX_ITER, EPSILON, SEED,2,0.5)
         # typicality, centroids, step = pfcm.fit()
 
         # Khởi tạo PFCM từ kết quả của FCM
