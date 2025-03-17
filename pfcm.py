@@ -181,3 +181,5 @@ if __name__ == '__main__':
         labels = extract_labels(pfcm.typicality)
         print("Unique labels:", np.unique(labels))
         print("Số lượng mẫu theo từng cụm:", np.bincount(labels))
+
+        # ok DVT 18/03/2005
