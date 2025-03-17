@@ -27,10 +27,7 @@ class PFPCM(PCM):
     def _capnhat_tamcum(self):
         """"ham cap nhat tam cum"""
         tong = self.a*(self.u**self.m) + self.b*(self.typicality**self.n)
- 
-        # tu = np.sum(tong.T *self.X,axis=1,keepdims=True)
         tu = np.dot(tong.T,self.X)
-        
         mau = division_by_zero(np.sum(tong.T,axis=1))
         return tu/mau[:,None]
     
@@ -80,7 +77,7 @@ if __name__ == '__main__':
             wdvl(hypervolume(U,m=2)), # FHV
             wdvl(partition_entropy(U)), # PE
             # wdvl(separation(X,U,V)), #S
-            # wdvl(f1_score(labels_all,labels)) # F1
+            wdvl(f1_score(labels_all,labels)) # F1
         ]
         return SPLIT.join(kqdg)
     
@@ -129,7 +126,7 @@ if __name__ == '__main__':
         # fcm.fit(data=X, seed=SEED)
         # print(write_report(alg='FCM0', index=0, process_time=fcm.process_time, step=fcm.step, X=X, V=fcm.centroids, U=fcm.membership, labels_all=labels_all))
 
-        titles = ['Alg', 'Time', 'Step', 'DI+', 'DB-', 'PC+', 'XB-', 'CE-','SI+','FHV-','PE-']
+        titles = ['Alg', 'Time', 'Step', 'DI+', 'DB-', 'PC+', 'XB-', 'CE-','SI+','FHV-','PE-','F1+']
         print(SPLIT.join(titles))
 
         # chay thuat toan fcm
@@ -161,7 +158,7 @@ if __name__ == '__main__':
         # chay thuat toan PFCM
         # ===============================================
 
-        pfcm = PFPCM(X, n_clusters, M,2, MAX_ITER, EPSILON, SEED,2,0.5)
+        pfcm = PFPCM(X, n_clusters, M,2, MAX_ITER, EPSILON, SEED,2.0,0.5)
         # typicality, centroids, step = pfcm.fit()
 
         # Khởi tạo PFCM từ kết quả của FCM

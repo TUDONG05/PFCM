@@ -1,7 +1,7 @@
 # Indices of Cluster Validity
 import numpy as np
 import math
-from utility import norm_distances, extract_labels
+from utility import norm_distances, extract_labels, division_by_zero
 
 # DI +
 def dunn(data: np.ndarray, labels: np.ndarray) -> float:
