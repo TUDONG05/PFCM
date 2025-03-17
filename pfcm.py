@@ -92,7 +92,7 @@ if __name__ == '__main__':
 
 
     clustering_report = []
-    data_id = 53
+    data_id = 602
     if data_id in TEST_CASES:
         _start_time = time.time()
         _TEST = TEST_CASES[data_id]
