@@ -6,7 +6,7 @@ from validity import *
 import sys
 sys.path.append('/home/dongtu/Desktop/DVT/pcm')
 from pcm.pcm import PCM
-class PFPCM(PCM):
+class PFCM(PCM):
     def __init__(self, X, n_clusters, m,n, max_iter, epsilon, seed,a,b):
         self.a=a
         self.b=b
@@ -34,8 +34,15 @@ class PFPCM(PCM):
 
     
     def fit(self):
-        self.typicality, self.centroids ,self.step,self.eta= super().fit(mode=2)
-        self.u = self._capnhat_mttv()
+        for i in range(MAX_ITER):
+            self.step +=1
+            old_u = self.u.copy()
+            self.u =self._capnhat_mttv()
+            self.eta =self._kt_eta()
+            self.typicality=self._capnhat_typicality()
+            self.centroids=self._capnhat_tamcum()
+            if np.linalg.norm(self.u-old_u)<self.epsilon:
+                break
         return self.u, self.centroids, self.step
 if __name__ == '__main__':
     import time
@@ -158,19 +165,18 @@ if __name__ == '__main__':
         # chay thuat toan PFCM
         # ===============================================
 
-        pfcm = PFPCM(X, n_clusters, M,2, MAX_ITER, EPSILON, SEED,2.0,0.5)
-        # typicality, centroids, step = pfcm.fit()
+        pfcm = PFCM(X, n_clusters, M,2, MAX_ITER, EPSILON, SEED,1,1)
+     
 
         # Khởi tạo PFCM từ kết quả của FCM
-        
-        pfcm.u = u_fcm  # Dùng kết quả FCM
-        pfcm.centroids = centroids_fcm  # Dùng tâm cụm từ FCM
-        pfcm.typicality=pcm.typicality
-        typicality, centroids, step= pfcm.fit()
+        # pfcm.u = u_fcm  # Dùng kết quả FCM
+        # pfcm.centroids = centroids_fcm  # Dùng tâm cụm từ FCM
+        # pfcm.typicality=pcm.typicality
+        u, centroids, step= pfcm.fit()
 
 
 
-        print(write_report(alg='PFCM', index=0, process_time=pfcm.time, step=pfcm.step, X=X, V=pfcm.centroids, U=pfcm.typicality, labels_all=labels_all))
+        print(write_report(alg='PFCM', index=0, process_time=pfcm.time, step=pfcm.step, X=X, V=pfcm.centroids, U=pfcm.u, labels_all=labels_all))
 
         labels = extract_labels(pfcm.typicality)
         print("Unique labels:", np.unique(labels))
